@@ -51,6 +51,23 @@ namespace Intelife.Diagnostic
         process.Status = ProcessExecutionStatus.Queued;
       }
     }
+    public void QueueProcess(ProcessPriorityClass prc, params ProcessEx[] processes)
+    {
+      if (processes == null)
+        throw new ArgumentNullException("Processes can not be null");
+
+      foreach (var item in processes)
+      {
+        this.QueueProcess(item, prc);
+      }
+    }
+    public void QueueProcess(ProcessEx process)
+    {
+      if (process == null)
+        throw new ArgumentNullException("Process can not be null");
+
+      this.QueueProcess(process, ProcessPriorityClass.Normal);
+    }
     /// <summary>
     /// Queues linked processes.
     /// </summary>
@@ -66,9 +83,26 @@ namespace Intelife.Diagnostic
         }
       }
     }
+    public void QueueLinkedProcesses(params ProcessEx[] processes)
+    {
+      if (processes == null)
+        throw new ArgumentNullException("Processes can not be null");
+
+      var newList = new LinkedList<KeyValuePair<ProcessEx, ProcessPriorityClass>>();
+      foreach (var item in processes)
+      {
+        newList.AddLast(new KeyValuePair<ProcessEx, ProcessPriorityClass>(item, ProcessPriorityClass.Normal));
+      }
+
+      this.QueueLinkedProcesses(newList);
+    }
     public void Start()
     {
+      if (this._linkedProcessQueue.Count == 0
+        && this._processQueue.Count == 0)
+        throw new InvalidOperationException("No process in execution queue");
 
+      this.LaunchQueue();
     }
     private void LaunchQueue()
     {
