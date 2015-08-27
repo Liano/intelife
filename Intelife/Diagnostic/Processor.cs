@@ -16,6 +16,7 @@ namespace Intelife.Diagnostic
       get { return this._maxCoresToUse; } 
       set { this.SetMaxCoresToUse(value); } 
     }
+    public int FreeSlots { get { return this.GetFreeSlotCount(); } }
     public static Processor O
     {
       get
